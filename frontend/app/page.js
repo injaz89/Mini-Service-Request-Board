@@ -1,0 +1,121 @@
+import Link from 'next/link';
+import { getAllJobs } from '../lib/api';
+import CategoryFilter from './components/CategoryFilter';
+
+// Status badge colours
+const STATUS_STYLES = {
+  Open:        'bg-green-100 text-green-700',
+  'In Progress': 'bg-yellow-100 text-yellow-700',
+  Closed:      'bg-gray-100 text-gray-500',
+};
+
+function formatDate(dateStr) {
+  return new Date(dateStr).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+export const metadata = {
+  title: 'Service Requests | Mini-Service',
+  description: 'Browse and post local service job requests.',
+};
+
+export default async function HomePage({ searchParams }) {
+  const category = searchParams?.category || '';
+
+  let jobs = [];
+  let error = null;
+
+  try {
+    const result = await getAllJobs(category ? { category } : {});
+    jobs = result.data || [];
+  } catch (err) {
+    error = err.message;
+  }
+
+  return (
+    <div>
+      {/* ── Page Header ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Service Requests</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            {jobs.length} job{jobs.length !== 1 ? 's' : ''} found
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {/* Category filter (client component) */}
+          <CategoryFilter selected={category} />
+
+          {/* Post a Job button */}
+          <Link
+            href="/jobs/new"
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            + Post a Job
+          </Link>
+        </div>
+      </div>
+
+      {/* ── Error State ── */}
+      {error && (
+        <div className="rounded-lg bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm mb-6">
+          Failed to load jobs: {error}
+        </div>
+      )}
+
+      {/* ── Empty State ── */}
+      {!error && jobs.length === 0 && (
+        <div className="text-center py-16 text-gray-400">
+          <p className="text-lg font-medium">No jobs found</p>
+          <p className="text-sm mt-1">Try a different category or post the first one.</p>
+        </div>
+      )}
+
+      {/* ── Job Cards Grid ── */}
+      {jobs.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {jobs.map((job) => (
+            <Link
+              key={job._id}
+              href={`/jobs/${job._id}`}
+              className="block bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md hover:border-blue-300 transition-all"
+            >
+              {/* Title */}
+              <h2 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2">
+                {job.title}
+              </h2>
+
+              {/* Meta row */}
+              <div className="flex flex-wrap gap-2 text-xs text-gray-500 mb-3">
+                <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                  {job.category}
+                </span>
+                {job.location && (
+                  <span>📍 {job.location}</span>
+                )}
+              </div>
+
+              {/* Footer row */}
+              <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+                <span
+                  className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                    STATUS_STYLES[job.status] || 'bg-gray-100 text-gray-500'
+                  }`}
+                >
+                  {job.status}
+                </span>
+                <span className="text-xs text-gray-400">
+                  {formatDate(job.createdAt)}
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
