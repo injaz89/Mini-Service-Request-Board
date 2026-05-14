@@ -2,10 +2,10 @@
   "name": "MiniService-backend",
   "version": "1.0.0",
   "description": "Backend API for the Mini-Service full-stack application",
-  "main": "src/server.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "keywords": ["mini-service", "nodejs", "express", "mongodb"],
   "author": "",
