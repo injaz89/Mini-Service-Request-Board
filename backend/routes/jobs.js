@@ -1,6 +1,17 @@
 const express = require('express');
 const router = express.Router();
+const { body, validationResult } = require('express-validator');
 const JobRequest = require('../models/JobRequest');
+
+// ─── Validation rules for POST ────────────────────────────────────────────────
+const jobValidationRules = [
+  body('title').notEmpty().withMessage('Title is required'),
+  body('description').notEmpty().withMessage('Description is required'),
+  body('contactEmail')
+    .optional({ checkFalsy: true })
+    .isEmail()
+    .withMessage('Invalid email format'),
+];
 
 // ─── GET / — List all jobs (supports ?category= and ?status= filters) ─────────
 router.get('/', async (req, res) => {
@@ -34,15 +45,14 @@ router.get('/:id', async (req, res) => {
 });
 
 // ─── POST / — Create a new job ────────────────────────────────────────────────
-router.post('/', async (req, res) => {
+router.post('/', jobValidationRules, async (req, res) => {
   try {
-    const { title, description } = req.body;
-
-    // Validate required fields explicitly before hitting mongoose
-    if (!title || !description) {
+    // Check express-validator results
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        message: 'Title and description are required',
+        errors: errors.array().map((e) => ({ field: e.path, message: e.msg })),
       });
     }
 
@@ -50,7 +60,7 @@ router.post('/', async (req, res) => {
 
     res.status(201).json({ success: true, data: job });
   } catch (error) {
-    // Mongoose validation errors
+    // Mongoose validation errors (fallback)
     if (error.name === 'ValidationError') {
       const messages = Object.values(error.errors).map((e) => e.message);
       return res.status(400).json({ success: false, message: messages.join(', ') });
