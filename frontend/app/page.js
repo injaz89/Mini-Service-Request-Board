@@ -26,7 +26,12 @@ export default async function HomePage({ searchParams }) {
     const result = await getAllJobs(category ? { category } : {});
     jobs = result.data || [];
   } catch (err) {
-    error = err.message;
+    // Distinguish a network/connection failure from an API error
+    if (err.message === 'fetch failed' || err.cause?.code === 'ECONNREFUSED') {
+      error = 'Could not load jobs. Is the backend running?';
+    } else {
+      error = err.message || 'Something went wrong loading jobs.';
+    }
   }
 
   return (
@@ -56,8 +61,12 @@ export default async function HomePage({ searchParams }) {
 
       {/* ── Error State ── */}
       {error && (
-        <div className="rounded-lg bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm mb-6">
-          Failed to load jobs: {error}
+        <div className="rounded-lg bg-red-50 border border-red-200 text-red-700 px-4 py-4 text-sm mb-6 flex items-start gap-3">
+          <span className="text-lg leading-none mt-0.5">⚠️</span>
+          <div>
+            <p className="font-semibold mb-0.5">Failed to load jobs</p>
+            <p className="text-red-600">{error}</p>
+          </div>
         </div>
       )}
 
@@ -71,12 +80,14 @@ export default async function HomePage({ searchParams }) {
 
       {/* ── Job Cards Grid ── */}
       {jobs.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {jobs.map((job) => (
             <Link
               key={job._id}
               href={`/jobs/${job._id}`}
-              className="block bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md hover:border-blue-300 transition-all"
+              className="flex flex-col bg-white rounded-xl border border-gray-200 p-5
+                         hover:shadow-lg hover:border-blue-300 hover:-translate-y-0.5
+                         transition-all duration-200 ease-in-out"
             >
               {/* Title */}
               <h2 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2">

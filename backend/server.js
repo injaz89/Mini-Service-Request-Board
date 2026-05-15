@@ -13,7 +13,13 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Accept'],
+  })
+);
 app.use(express.json());
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
