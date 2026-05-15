@@ -80,6 +80,14 @@ export default function NewJobPage() {
 
   return (
     <div className="max-w-xl mx-auto">
+      {/* ── Back link ── */}
+      <Link
+        href="/"
+        className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 font-medium mb-6 transition-colors"
+      >
+        ← Back to all jobs
+      </Link>
+
       {/* ── Header ── */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Post a Service Request</h1>

@@ -17,9 +17,9 @@ export default function RootLayout({ children }) {
               {/* Left: Brand */}
               <Link
                 href="/"
-                className="text-xl font-bold text-gray-900 tracking-tight hover:text-blue-600 transition-colors"
+                className="flex items-center gap-2 text-xl font-bold text-gray-900 tracking-tight hover:text-blue-600 transition-colors"
               >
-                GlobalTNA
+                <span className="text-blue-600">🔧</span> Mini-Service
               </Link>
 
               {/* Right: Nav link */}

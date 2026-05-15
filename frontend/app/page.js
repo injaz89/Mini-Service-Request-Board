@@ -1,13 +1,7 @@
 import Link from 'next/link';
 import { getAllJobs } from '../lib/api';
 import CategoryFilter from './components/CategoryFilter';
-
-// Status badge colours
-const STATUS_STYLES = {
-  Open:        'bg-green-100 text-green-700',
-  'In Progress': 'bg-yellow-100 text-yellow-700',
-  Closed:      'bg-gray-100 text-gray-500',
-};
+import StatusBadge from './components/StatusBadge';
 
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString('en-GB', {
@@ -99,15 +93,8 @@ export default async function HomePage({ searchParams }) {
                 )}
               </div>
 
-              {/* Footer row */}
               <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                <span
-                  className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                    STATUS_STYLES[job.status] || 'bg-gray-100 text-gray-500'
-                  }`}
-                >
-                  {job.status}
-                </span>
+                <StatusBadge status={job.status} />
                 <span className="text-xs text-gray-400">
                   {formatDate(job.createdAt)}
                 </span>
