@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
-const CATEGORIES = ['All', 'Plumbing', 'Electrical', 'Painting', 'Joinery'];
+const CATEGORIES = ['All', 'Plumbing', 'Electrical', 'Painting', 'Joinery', 'Other'];
 
 export default function CategoryFilter({ selected }) {
   const router = useRouter();

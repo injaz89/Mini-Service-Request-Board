@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { getAllJobs } from '../lib/api';
 import CategoryFilter from './components/CategoryFilter';
@@ -17,7 +18,8 @@ export const metadata = {
 };
 
 export default async function HomePage({ searchParams }) {
-  const category = searchParams?.category || '';
+  const resolvedParams = await Promise.resolve(searchParams);
+  const category = resolvedParams?.category || '';
 
   let jobs = [];
   let error = null;
@@ -46,8 +48,10 @@ export default async function HomePage({ searchParams }) {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Category filter (client component) */}
-          <CategoryFilter selected={category} />
+          {/* Category filter (client component) — must be in Suspense because it uses useSearchParams() */}
+          <Suspense fallback={<div className="h-9 w-28 bg-gray-100 rounded-lg animate-pulse" />}>
+            <CategoryFilter selected={category} />
+          </Suspense>
 
           {/* Post a Job button */}
           <Link
