@@ -1,4 +1,12 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+// For SERVER components (SSR/SSG), use the full backend URL.
+// For CLIENT components (browser), use a relative path — Next.js rewrites proxy /api/* → backend.
+const SERVER_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5005';
+
+// Returns the correct base URL depending on where the code is running
+function getBase() {
+  if (typeof window === 'undefined') return SERVER_BASE_URL; // server-side
+  return '';                                                  // client-side: use relative URL
+}
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
 async function handleResponse(res) {
@@ -24,7 +32,7 @@ export async function getAllJobs(filters = {}) {
   if (filters.status)   params.set('status',   filters.status);
 
   const query = params.toString() ? `?${params.toString()}` : '';
-  const res = await fetch(`${BASE_URL}/api/jobs${query}`, {
+  const res = await fetch(`${getBase()}/api/jobs${query}`, {
     cache: 'no-store', // always fresh — job board data changes frequently
   });
   return handleResponse(res);
@@ -32,7 +40,7 @@ export async function getAllJobs(filters = {}) {
 
 // ─── GET /api/jobs/:id ────────────────────────────────────────────────────────
 export async function getJobById(id) {
-  const res = await fetch(`${BASE_URL}/api/jobs/${id}`, {
+  const res = await fetch(`${getBase()}/api/jobs/${id}`, {
     cache: 'no-store',
   });
   return handleResponse(res);
@@ -40,7 +48,7 @@ export async function getJobById(id) {
 
 // ─── POST /api/jobs ───────────────────────────────────────────────────────────
 export async function createJob(data) {
-  const res = await fetch(`${BASE_URL}/api/jobs`, {
+  const res = await fetch(`${getBase()}/api/jobs`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -50,7 +58,7 @@ export async function createJob(data) {
 
 // ─── PATCH /api/jobs/:id ──────────────────────────────────────────────────────
 export async function updateJobStatus(id, status) {
-  const res = await fetch(`${BASE_URL}/api/jobs/${id}`, {
+  const res = await fetch(`${getBase()}/api/jobs/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status }),
@@ -60,7 +68,7 @@ export async function updateJobStatus(id, status) {
 
 // ─── DELETE /api/jobs/:id ─────────────────────────────────────────────────────
 export async function deleteJob(id) {
-  const res = await fetch(`${BASE_URL}/api/jobs/${id}`, {
+  const res = await fetch(`${getBase()}/api/jobs/${id}`, {
     method: 'DELETE',
   });
   return handleResponse(res);
