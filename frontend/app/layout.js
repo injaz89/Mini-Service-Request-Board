@@ -2,19 +2,16 @@ import './globals.css';
 import Navbar from './components/Navbar';
 
 export const metadata = {
-  title: 'Mini-Service Request Board',
+  title: 'MiniService — Local Service Requests',
   description: 'Find and post local service job requests.',
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body>
-        {/* ── Top Navbar ── */}
+    <html lang="en" className="h-full">
+      <body className="min-h-full bg-slate-100">
         <Navbar />
-
-        {/* ── Page Content ── */}
-        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           {children}
         </main>
       </body>

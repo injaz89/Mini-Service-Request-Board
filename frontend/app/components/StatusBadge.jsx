@@ -1,13 +1,14 @@
-const STATUS_STYLES = {
-  Open:          'bg-green-100 text-green-700 border border-green-200',
-  'In Progress': 'bg-yellow-100 text-yellow-700 border border-yellow-200',
-  Closed:        'bg-gray-100 text-gray-500 border border-gray-200',
+const STATUS_CONFIG = {
+  'Open':        { cls: 'bg-emerald-50 text-emerald-700 border border-emerald-200', dot: 'bg-emerald-500' },
+  'In Progress': { cls: 'bg-amber-50  text-amber-700  border border-amber-200',   dot: 'bg-amber-500'  },
+  'Closed':      { cls: 'bg-slate-100 text-slate-500  border border-slate-200',   dot: 'bg-slate-400'  },
 };
 
 export default function StatusBadge({ status }) {
-  const cls = STATUS_STYLES[status] || 'bg-gray-100 text-gray-500 border border-gray-200';
+  const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG['Closed'];
   return (
-    <span className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${cls}`}>
+    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${cfg.cls}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
       {status}
     </span>
   );
